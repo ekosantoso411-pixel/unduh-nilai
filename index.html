@@ -11,19 +11,45 @@
         h1, h2, h3 { text-align: center; color: #2c3e50; }
         
         /* Area Pencarian */
-        .search-box { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; }
-        .search-box input { padding: 12px; font-size: 16px; border: 1px solid #ccd1d9; border-radius: 5px; width: 250px; outline: none; }
-        .search-box input:focus { border-color: #3498db; }
+        .search-box { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+        .search-box input { padding: 12px; font-size: 16px; border: 1px solid #ccd1d9; border-radius: 5px; width: 250px; max-width: 100%; outline: none; transition: 0.3s;}
+        .search-box input:focus { border-color: #3498db; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
         .search-box button { padding: 12px 25px; font-size: 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
         .search-box button:hover { background: #2980b9; }
+
+        /* Kotak Pesan (Pengganti Alert) */
+        #message-box {
+            display: none;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .msg-error { background-color: #fdecea; color: #e74c3c; border: 1px solid #fadbd8; }
+        .msg-warning { background-color: #fef9e7; color: #f39c12; border: 1px solid #fdebd0; }
 
         /* Status Loading */
         #loading { text-align: center; display: none; color: #e67e22; font-weight: bold; margin-bottom: 15px; font-size: 16px; }
 
         /* Area Hasil & Tabel */
         .result-section { display: none; margin-top: 30px; border-top: 2px dashed #ccd1d9; padding-top: 20px; }
-        .student-info { margin-bottom: 20px; font-size: 16px; line-height: 1.6; }
-        .student-info p { margin: 5px 0; }
+        
+        /* Desain Data Siswa (Diperbaiki Menggunakan CSS Grid agar Sejajar) */
+        .student-info { 
+            display: grid; 
+            grid-template-columns: 160px 15px 1fr; /* Proporsi: Label, Titik Dua, Value */
+            gap: 8px 0; /* Jarak antar baris */
+            margin-bottom: 25px; 
+            font-size: 16px; 
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+        .student-info .label { font-weight: bold; color: #2c3e50; }
+        .student-info .colon { text-align: center; font-weight: bold; color: #2c3e50; }
+        .student-info .value { color: #333; font-weight: 500; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
@@ -34,12 +60,19 @@
         .btn-print { display: block; width: 100%; padding: 15px; background: #27ae60; color: white; text-align: center; font-size: 18px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
         .btn-print:hover { background: #2ecc71; }
 
+        /* Pengaturan Khusus untuk Mobile Layout */
+        @media (max-width: 500px) {
+            .student-info { grid-template-columns: 120px 10px 1fr; font-size: 14px; padding: 12px; }
+            th, td { font-size: 13px; padding: 8px; }
+        }
+
         /* Pengaturan Khusus untuk PDF / Print */
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; max-width: 100%; padding: 0; }
-            .search-box, .btn-print, #loading { display: none !important; }
+            .search-box, .btn-print, #loading, #message-box { display: none !important; }
             .result-section { border-top: none; padding-top: 0; }
+            .student-info { background: transparent; border: none; padding: 0; margin-bottom: 20px; }
             th { background-color: #f2f2f2 !important; color: #000 !important; }
         }
     </style>
@@ -48,6 +81,9 @@
     <div class="container">
         <h1>Portal Cek Nilai Siswa</h1>
         
+        <!-- Kotak Pesan Error/Notifikasi Pengganti Alert -->
+        <div id="message-box"></div>
+
         <!-- Kotak Pencarian -->
         <div class="search-box">
             <input type="text" id="nis" placeholder="Masukkan NIS Anda di sini..." onkeypress="handleEnter(event)">
@@ -59,12 +95,14 @@
 
         <!-- Area Hasil yang akan muncul setelah data ditemukan -->
         <div class="result-section" id="result-section">
-            <h2>Laporan Hasil Belajar</h2>
+            <h2>HASIL NILAI PPTKA-TKAD TAHAP 1 SLEMAN</h2>
+            <h2>SMP MUHAMMADIYAH 2 DEPOK</h2>
             
+            <!-- Struktur Identitas Siswa Dirapikan dengan CSS Grid -->
             <div class="student-info">
-                <p><strong>Nama Lengkap :</strong> <span id="nama-siswa">-</span></p>
-                <p><strong>Nomor Induk Siswa :</strong> <span id="nis-siswa">-</span></p>
-                <p><strong>Kelas :</strong> <span id="kelas-siswa">-</span></p>
+                <div class="label">Nama Lengkap</div><div class="colon">:</div><div class="value" id="nama-siswa">-</div>
+                <div class="label">Nomor Induk Siswa</div><div class="colon">:</div><div class="value" id="nis-siswa">-</div>
+                <div class="label">Kelas</div><div class="colon">:</div><div class="value" id="kelas-siswa">-</div>
             </div>
 
             <table>
@@ -94,8 +132,21 @@
     </div>
 
     <script>
-        // URL Google Apps Script yang Anda berikan
+        // URL Google Apps Script Anda
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyr3bkmYlWUiot6dlnNMYPlQKbRF8WvUHxiesUAdnwiVDx_oxDO9QS9lq-DWjcxiOu3/exec';
+
+        // Fungsi Menampilkan Pesan Khusus (Pengganti Alert)
+        function showMessage(message, type = 'error') {
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = message;
+            msgBox.className = type === 'error' ? 'msg-error' : 'msg-warning';
+            msgBox.style.display = 'block';
+            
+            // Sembunyikan otomatis setelah 5 detik
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 5000);
+        }
 
         // Fungsi agar bisa klik 'Enter' di keyboard untuk mencari
         function handleEnter(event) {
@@ -112,13 +163,14 @@
             
             // Cek apakah NIS kosong
             if (!nisInput) {
-                alert('Silakan masukkan NIS terlebih dahulu.');
+                showMessage('Silakan masukkan NIS terlebih dahulu.', 'warning');
                 return;
             }
 
             // Sembunyikan hasil sebelumnya dan tampilkan tulisan loading
             resultSection.style.display = 'none';
             loadingText.style.display = 'block';
+            document.getElementById('message-box').style.display = 'none'; // reset error
             
             // Menghubungi Google Sheets via URL API Anda
             fetch(`${SCRIPT_URL}?nis=${nisInput}`)
@@ -168,14 +220,14 @@
                         resultSection.style.display = 'block';
                     } else {
                         // Jika script merespon dengan status 'error' (NIS tidak ketemu)
-                        alert(res.message || 'NIS tidak ditemukan di database.');
+                        showMessage(res.message || 'NIS tidak ditemukan di database.', 'error');
                     }
                 })
                 .catch(error => {
                     // Jika terjadi error pada jaringan internet atau konfigurasi URL
                     loadingText.style.display = 'none';
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengambil data! Pastikan URL benar dan Deploy Google Script diset akses "Siapa saja" (Anyone).');
+                    showMessage('Terjadi kesalahan! Pastikan URL benar dan Deploy Google Script diset "Anyone".', 'error');
                 });
         }
     </script>
