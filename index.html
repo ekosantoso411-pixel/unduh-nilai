@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Nilai Siswa</title>
+    <title>Cek Nilai PP TKA_TKAD</title>
     <style>
         /* Gaya Tampilan Dasar */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 20px; color: #333; }
@@ -95,7 +95,8 @@
 
         <!-- Area Hasil yang akan muncul setelah data ditemukan -->
         <div class="result-section" id="result-section">
-            <h2>Laporan Hasil Belajar</h2>
+            <h2>Hasil PP TKA-TKAD Tahap 1 Sleman</h2>
+            <h2>SMP MUHAMMADIYAH 2 DEPOK</h2>
             
             <!-- Struktur Identitas Siswa Dirapikan dengan CSS Grid -->
             <div class="student-info">
@@ -118,9 +119,9 @@
                 </tbody>
                 <tfoot>
                     <tr style="background-color: #ecf0f1; font-weight: bold;">
-                        <td colspan="2" style="text-align: right;">Rata-rata</td>
+                        <td colspan="2" style="text-align: right;">Rata-rata & Peringkat Total</td>
                         <td id="rata-rata">-</td>
-                        <td>-</td>
+                        <td id="peringkat-total">-</td>
                     </tr>
                 </tfoot>
             </table>
@@ -131,7 +132,7 @@
     </div>
 
     <script>
-        // URL Google Apps Script Anda
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP ANDA YANG BARU
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEOyBd5OrHe0bKm6A0Mb74HIU31_-w5fIAyXwKrrxX2rcLGs4TSjG8-WG5mj1hTux0/exec';
 
         // Fungsi Menampilkan Pesan Khusus (Pengganti Alert)
@@ -214,8 +215,7 @@
                         siswa.nilai.forEach((item, index) => {
                             const row = document.createElement('tr');
                             
-                            // Mengambil data peringkat sekolah dari Google Sheet
-                            // Jika data belum ada di Sheet, maka akan menampilkan '-'
+                            // Mengambil data peringkat per mata pelajaran jika ada, atau '-'
                             let peringkatSekolah = item.peringkatSekolah || '-';
 
                             row.innerHTML = `
@@ -231,6 +231,11 @@
                         // Hitung rata-rata
                         const rataRata = (totalNilai / siswa.nilai.length).toFixed(2);
                         document.getElementById('rata-rata').textContent = rataRata;
+
+                        // Menangkap Peringkat Keseluruhan dari Google Script
+                        let peringkatTotal = siswa.peringkatSekolahTotal || '-';
+                        document.getElementById('peringkat-total').innerHTML = 
+                            peringkatTotal !== '-' ? `<span style="color: #e67e22; font-size: 16px;">${peringkatTotal}</span>` : '-';
 
                         // Munculkan kembali tabel dan laporan
                         resultSection.style.display = 'block';
