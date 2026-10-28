@@ -95,8 +95,7 @@
 
         <!-- Area Hasil yang akan muncul setelah data ditemukan -->
         <div class="result-section" id="result-section">
-            <h2>HASIL NILAI PPTKA-TKAD TAHAP 1 SLEMAN</h2>
-            <h2>SMP MUHAMMADIYAH 2 DEPOK</h2>
+            <h2>Laporan Hasil Belajar</h2>
             
             <!-- Struktur Identitas Siswa Dirapikan dengan CSS Grid -->
             <div class="student-info">
@@ -111,7 +110,7 @@
                         <th width="10%">No</th>
                         <th style="text-align: left;" width="50%">Mata Pelajaran</th>
                         <th width="20%">Nilai</th>
-                        <th width="20%">Predikat</th>
+                        <th width="20%">Peringkat Sekolah</th>
                     </tr>
                 </thead>
                 <tbody id="table-body">
@@ -192,21 +191,38 @@
 
                         let totalNilai = 0;
 
+                        // Mengurutkan urutan mata pelajaran sesuai permintaan
+                        const urutanPelajaran = [
+                            "Matematika",
+                            "Bahasa Indonesia",
+                            "Bahasa Inggris",
+                            "Ilmu Pengetahuan"
+                        ];
+
+                        siswa.nilai.sort((a, b) => {
+                            let indexA = urutanPelajaran.indexOf(a.mataPelajaran);
+                            let indexB = urutanPelajaran.indexOf(b.mataPelajaran);
+                            
+                            // Jika mata pelajaran tidak ada di daftar prioritas, taruh di akhir
+                            if (indexA === -1) indexA = 999;
+                            if (indexB === -1) indexB = 999;
+                            
+                            return indexA - indexB;
+                        });
+
                         // Looping setiap mata pelajaran untuk dibuatkan baris tabel
                         siswa.nilai.forEach((item, index) => {
                             const row = document.createElement('tr');
                             
-                            // Logika Predikat Sederhana
-                            let predikat = 'D';
-                            if(item.nilai >= 90) predikat = 'A';
-                            else if(item.nilai >= 80) predikat = 'B';
-                            else if(item.nilai >= 70) predikat = 'C';
+                            // Mengambil data peringkat sekolah dari Google Sheet
+                            // Jika data belum ada di Sheet, maka akan menampilkan '-'
+                            let peringkatSekolah = item.peringkatSekolah || '-';
 
                             row.innerHTML = `
                                 <td>${index + 1}</td>
                                 <td style="text-align: left;">${item.mataPelajaran}</td>
                                 <td>${item.nilai}</td>
-                                <td><strong style="color: ${predikat === 'D' ? 'red' : 'black'};">${predikat}</strong></td>
+                                <td><strong style="color: #2c3e50;">${peringkatSekolah}</strong></td>
                             `;
                             tableBody.appendChild(row);
                             totalNilai += item.nilai; // Tambahkan ke total untuk dihitung rata-ratanya
